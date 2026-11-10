@@ -52,6 +52,7 @@ var lb=null;function lbOpen(src,alt){if(!lb){lb=d.createElement('div');lb.classN
 function lbClose(){if(!lb||!lb.classList.contains('show'))return;lb.classList.remove('on');d.documentElement.classList.remove('lbx-open');setTimeout(function(){if(lb&&!lb.classList.contains('on'))lb.classList.remove('show');},260);}
 d.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-zoom]'):null;if(!a)return;e.preventDefault();var im=a.querySelector('img');lbOpen(a.getAttribute('href'),im?im.alt:'');});
 window.__orbitLb={open:lbOpen,close:lbClose};
+d.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-yt]'):null;if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();var v=d.createElement('div');v.className='v';v.innerHTML='<iframe src="https://www.youtube.com/embed/'+a.getAttribute('data-yt')+'?autoplay=1&rel=0&playsinline=1" title="포트폴리오 영상" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';a.parentNode.replaceChild(v,a);});
 /* v42 첫 방문 인트로(3안 파티클): 심볼 → '오르빗마케팅' → 점이 가운데로 모여 빛이 차오르고 → 폭죽처럼 반짝이며 천천히 퍼지며 첫 화면. 클릭·키·휠·터치로 건너뜀 */
 var IDG={head:d.documentElement.classList.contains('introing'),calm:calm,path:location.pathname,ss:null,size:[innerWidth,innerHeight],mode:window.__orbitMode||'',note:''};
 try{IDG.ss=sessionStorage.getItem('orbit_intro2');}catch(e){IDG.ss='ERR';}if(IDG.mode==='artifact'){IDG.note+='(미리보기: 봤음 표시 무시) ';IDG.ss=null;}
