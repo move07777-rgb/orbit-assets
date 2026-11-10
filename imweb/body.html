@@ -55,7 +55,7 @@ window.__orbitLb={open:lbOpen,close:lbClose};
 /* v42 첫 방문 인트로(3안 파티클): 심볼 → '오르빗마케팅' → 점이 가운데로 모여 빛이 차오르고 → 폭죽처럼 반짝이며 천천히 퍼지며 첫 화면. 클릭·키·휠·터치로 건너뜀 */
 var IDG={head:d.documentElement.classList.contains('introing'),calm:calm,path:location.pathname,ss:null,size:[innerWidth,innerHeight],mode:window.__orbitMode||'',note:''};
 try{IDG.ss=sessionStorage.getItem('orbit_intro2');}catch(e){IDG.ss='ERR';}if(IDG.mode==='artifact'){IDG.note+='(미리보기: 봤음 표시 무시) ';IDG.ss=null;}
-if(!IDG.head&&!calm&&(IDG.ss===null||IDG.ss==='ERR')&&/^\/main\/?$|_imweb_mock_1_/i.test(location.pathname)){d.documentElement.classList.add('introing');IDG.note='body에서 재판정으로 시작';}
+if(!IDG.head&&!calm&&(IDG.ss===null||IDG.ss==='ERR')&&/^\/(|main)\/?$|_imweb_mock_1_/i.test(location.pathname)){d.documentElement.classList.add('introing');IDG.note='body에서 재판정으로 시작';}
 function showDiag(){if(!window.__orbitDiag)return;var b=d.getElementById('idiag');if(!b){b=d.createElement('div');b.id='idiag';b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:3000;font:11px/1.4 monospace;color:#8B95A1;background:rgba(255,255,255,.85);padding:4px 8px;border-radius:6px;max-width:92vw;word-break:break-all;pointer-events:none';d.body.appendChild(b);}b.textContent='인트로 진단 · head:'+IDG.head+' calm:'+IDG.calm+' ss:'+IDG.ss+' size:'+IDG.size.join('x')+' path:'+IDG.path+' mode:'+IDG.mode+' '+IDG.note;}
 showDiag();
 if(d.documentElement.classList.contains('introing')){try{(function(){var h=d.documentElement,el=d.createElement('div');el.className='intro';el.innerHTML='<canvas></canvas><button class="iskip" type="button">건너뛰기</button>';d.body.appendChild(el);h.classList.remove('entering');
