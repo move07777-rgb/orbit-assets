@@ -2,9 +2,11 @@
 <script>
 (function(){var d=document;var O=d.querySelectorAll('.orbit');if(!O.length)return;var R={querySelector:function(s){for(var i=0;i<O.length;i++){var e=O[i].querySelector(s);if(e)return e;}return null;},querySelectorAll:function(s){var r=[];for(var i=0;i<O.length;i++){var l=O[i].querySelectorAll(s);for(var j=0;j<l.length;j++)r.push(l[j]);}return r;}};
 var rv=R.querySelectorAll('.rv');function show(el){if(el.classList.contains('on'))return;el.classList.add('on');if(el.querySelector('[data-count]'))count(el);}
-var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){show(e.target);io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -4% 0px'}):null;
-if(io){rv.forEach(function(el){io.observe(el);});}else{rv.forEach(show);}
-setTimeout(function(){if(!R.querySelector('.rv.on'))rv.forEach(show);},1500);/* 관찰이 안 돌면 전부 보이게 */
+var ioRan=false,io='IntersectionObserver' in window?new IntersectionObserver(function(es){ioRan=true;es.forEach(function(e){if(e.isIntersecting){show(e.target);io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -4% 0px'}):null;
+function rvManual(){var left=0;rv.forEach(function(el){if(el.classList.contains('on'))return;var r=el.getBoundingClientRect();if(r.top<innerHeight*.96&&r.bottom>0)show(el);else left++;});if(!left)window.removeEventListener('scroll',rvManual);}
+function rvFallback(){window.addEventListener('scroll',rvManual,{passive:true});window.addEventListener('resize',rvManual);rvManual();}
+if(io){rv.forEach(function(el){io.observe(el);});}else{rvFallback();}
+setTimeout(function(){if(io&&!ioRan)rvFallback();},1500);/* v59: 감시 장치가 실제로 안 돌았을 때만. 전부 켜지 않고 스크롤 위치를 직접 보고 화면에 들어온 것만 켬 */
 setTimeout(function(){rv.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)show(el);});},300);/* 처음부터 보이는 것은 바로 */
 function fmt(n,dec){return n.toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function count(root){root.querySelectorAll('[data-count]').forEach(function(el){var to=parseFloat(el.getAttribute('data-count')),dec=(el.getAttribute('data-dec')||0)|0,txt=fmt(to,dec);if(matchMedia('(prefers-reduced-motion:reduce)').matches||el.getAttribute('data-rolled')){el.textContent=txt;return;}el.setAttribute('data-rolled','1');var html='',k=0;txt.split('').forEach(function(ch){if(/\d/.test(ch)){var col='';for(var r=0;r<20;r++)col+='<span>'+(r%10)+'</span>';html+='<span class="rd" data-d="'+ch+'"><span class="rs" style="transition-delay:'+(k++*90)+'ms">'+col+'</span></span>';}else{html+='<span class="rc">'+ch+'</span>';}});el.innerHTML=html;requestAnimationFrame(function(){requestAnimationFrame(function(){el.querySelectorAll('.rs').forEach(function(x){var dg=+x.parentNode.getAttribute('data-d');x.style.transform='translateY('+(-(10+dg)*1.1)+'em)';});});});});}
