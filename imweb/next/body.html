@@ -61,7 +61,7 @@ var src=ph.getAttribute('src')||'',base=src.slice(0,src.lastIndexOf('/')+1);
 function playV(){try{v.muted=true;var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
 function startV(){v.addEventListener('playing',function(){v.classList.add('on');});v.setAttribute('muted','');v.src=base+'../hero-loop.mp4';playV();}
 function go(){var ctx=cv.getContext('2d'),imgs=new Array(N),okf=new Array(N),drawn=-1,cvOn=false,pt=0,V=0,hh=0,raf=0,last=0,pinned=false;imgs[0]=ph;okf[0]=true;
-function hdr(){var f=R.querySelector('.new_fixed_header')||R.querySelector('header');return f?f.offsetHeight:0;}
+function hdr(){var f=document.querySelector('.new_fixed_header')||document.querySelector('header');return f?f.offsetHeight:0;}/* document로 직접: 내보내기에서 d.querySelector는 우리 조각 안으로 좁혀져 아임웹 헤더를 못 찾음 */
 function near(i){if(okf[i])return i;for(var k=1;k<N;k++){if(i-k>=0&&okf[i-k])return i-k;if(i+k<N&&okf[i+k])return i+k;}return -1;}
 function draw(i){var j=near(i);if(j<0||j===drawn)return;var im=imgs[j],cw=cv.width,ch=cv.height,iw=im.naturalWidth,ih=im.naturalHeight;if(!iw||!ih)return;var k=Math.max(cw/iw,ch/ih),w=iw*k,h=ih*k;try{ctx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h);drawn=j;}catch(e){}}
 function warm(i,dir){for(var k=1;k<=5;k++){var j=i+dir*k;if(j>0&&j<N&&okf[j]&&imgs[j].decode){imgs[j].decode().catch(function(){});}}}
