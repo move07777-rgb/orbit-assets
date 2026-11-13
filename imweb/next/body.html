@@ -55,7 +55,7 @@ window.__orbitLb={open:lbOpen,close:lbClose};
 d.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-yt]'):null;if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();var v=d.createElement('div');v.className='v';v.innerHTML='<iframe src="https://www.youtube.com/embed/'+a.getAttribute('data-yt')+'?autoplay=1&rel=0&playsinline=1" title="포트폴리오 영상" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';a.parentNode.replaceChild(v,a);});
 /* v54 첫 화면 영상(토스 방식). 길이는 화면 높이 단위: 꽉 차기 PA + 그림 148장 PB + 끝 그림 유지 PC */
 (function(){var S=R.querySelector('.vh');if(!S)return;var st=S.querySelector('.vh-st'),ph=S.querySelector('.vh-ph'),v=S.querySelector('.vh-v'),cv=S.querySelector('.vh-c');if(!st||!ph||!v||!cv)return;
-var N=148,PA=.85,PB=4.6,PC=.45,mqW=window.matchMedia?matchMedia('(min-width:961px)'):null;
+var N=148,PA=1,PB=4.6,PC=.45,mqW=window.matchMedia?matchMedia('(min-width:961px)'):null;
 if(!mqW||!mqW.matches||matchMedia('(prefers-reduced-motion:reduce)').matches||!window.CSS||!CSS.supports||!CSS.supports('overflow','clip')||!CSS.supports('position','sticky')||!cv.getContext)return;
 var src=ph.getAttribute('src')||'',base=src.slice(0,src.lastIndexOf('/')+1);
 function playV(){try{v.muted=true;var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
@@ -65,15 +65,16 @@ function hdr(){var f=document.querySelector('.new_fixed_header')||document.query
 function near(i){if(okf[i])return i;for(var k=1;k<N;k++){if(i-k>=0&&okf[i-k])return i-k;if(i+k<N&&okf[i+k])return i+k;}return -1;}
 function draw(i){var j=near(i);if(j<0||j===drawn)return;var im=imgs[j],cw=cv.width,ch=cv.height,iw=im.naturalWidth,ih=im.naturalHeight;if(!iw||!ih)return;var k=Math.max(cw/iw,ch/ih),w=iw*k,h=ih*k;try{ctx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h);drawn=j;}catch(e){}}
 function warm(i,dir){for(var k=1;k<=5;k++){var j=i+dir*k;if(j>0&&j<N&&okf[j]&&imgs[j].decode){imgs[j].decode().catch(function(){});}}}
-function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+function ease(t){return 1-Math.pow(1-t,4);}/* 토스와 같은 곡선: 처음에 빨리 펴지고 천천히 마무리 */
 function upd(){raf=0;if(!pinned)return;var rc=S.getBoundingClientRect(),top=rc.top,total=S.offsetHeight-V,y=Math.min(Math.max(-top,0),total),u=y/V;st.style.setProperty('--ht',Math.max(hh-Math.max(-top,0),0).toFixed(1));/* 테두리 윗변은 올라가는 메뉴의 아랫변을 따라감 */document.documentElement.classList.toggle('orbit-vhin',rc.bottom>hh&&-top>4);/* v55 대표: 스크롤할 때는 아무것도 안 보이게(토스처럼) → 영상 구간 동안 메뉴·진행 표시 숨김 */
-var e=ease(Math.min(u/PA,1));st.style.setProperty('--g',(1-e).toFixed(4));var tt=Math.min(u/(PA*.62),1);st.style.setProperty('--ty',(-tt*V*.3).toFixed(1));st.style.setProperty('--to',(1-tt).toFixed(3));
+var e=ease(Math.min(u/PA,1));st.style.setProperty('--g',(1-e).toFixed(4));var tt=Math.min(Math.max((u/PA-.84)/.13,0),1);st.style.setProperty('--ty',(-40*tt).toFixed(1));st.style.setProperty('--to',(1-tt).toFixed(3));/* 글자: 제자리에 있다가 끝 무렵 40px만 올라가며 사라짐(토스 실측) */
 if(u>=PA){var t=Math.min((u-PA)/PB,1),idx=Math.round(t*(N-1));draw(idx);warm(idx,idx>=last?1:-1);last=idx;if(!cvOn){cvOn=true;cv.classList.add('on');clearTimeout(pt);pt=setTimeout(function(){try{v.pause();}catch(e){}},420);}}
 else if(cvOn){cvOn=false;cv.classList.remove('on');clearTimeout(pt);playV();}}
 function req(){if(!raf)raf=requestAnimationFrame(upd);}
+function fit(){var t=S.querySelector('.vh-t');if(!t)return;t.style.fontSize='';var cs=getComputedStyle(t),av=t.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),sp=t.children,need=0;for(var i=0;i<sp.length;i++)need+=sp[i].offsetWidth;need+=28*Math.max(sp.length-1,0);if(need>av&&av>0)t.style.fontSize=Math.floor(parseFloat(cs.fontSize)*av/need)+'px';}/* v57: 토스와 같은 80px. 문구가 길면 한 줄에 들어가게만 줄임 */
 function size(){if(!mqW.matches){if(pinned){pinned=false;S.classList.remove('vh-pin');S.style.height='';S.style.marginTop='';document.documentElement.classList.remove('orbit-vhin');cv.classList.remove('on');cvOn=false;playV();}return;}
 pinned=true;S.classList.add('vh-pin');hh=hdr();S.style.marginTop='';var sy=window.pageYOffset||0,off=S.getBoundingClientRect().top+sy;S.style.marginTop=(-off)+'px';var o2=S.getBoundingClientRect().top+sy;if(Math.abs(o2)>1)S.style.marginTop=(-off-o2)+'px';/* 무대를 문서 맨 위(메뉴 밑)까지 끌어올림 */V=st.offsetHeight||innerHeight;S.style.height=Math.round(V*(PA+PB+PC+1))+'px';
-var r=Math.min(window.devicePixelRatio||1,2),w=st.clientWidth*r,k=Math.min(1,1920/w);cv.width=Math.round(w*k);cv.height=Math.round(V*r*k);drawn=-1;upd();}
+fit();var r=Math.min(window.devicePixelRatio||1,2),w=st.clientWidth*r,k=Math.min(1,1920/w);cv.width=Math.round(w*k);cv.height=Math.round(V*r*k);drawn=-1;upd();}
 var order=[],seen={};[8,4,2,1].forEach(function(stp){for(var i=0;i<N;i+=stp){if(!seen[i]){seen[i]=1;order.push(i);}}});
 var qi=0,act=0;function pump(){while(act<6&&qi<order.length){(function(i){if(i===0)return;act++;var im=new Image();im.decoding='async';im.onload=function(){okf[i]=true;act--;req();pump();};im.onerror=function(){act--;pump();};im.src=base+'frame_'+('00'+(i+1)).slice(-3)+'.avif';imgs[i]=im;})(order[qi++]);}}
 size();startV();setTimeout(pump,500);window.addEventListener('scroll',req,{passive:true});window.addEventListener('resize',size);window.addEventListener('load',size);
